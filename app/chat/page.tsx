@@ -1,12 +1,12 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-
 import React, {
   useState,
   useRef,
   useEffect,
   FormEvent,
   KeyboardEvent,
+  Suspense,
 } from "react";
 
 type ChatMessage = {
@@ -20,6 +20,22 @@ type ChatMessage = {
 const uid = () => Math.random().toString(36).slice(2, 11);
 
 export default function ChatPage() {
+  return (
+    <Suspense fallback={<ChatFallback />}>
+      <InnerChat />
+    </Suspense>
+  );
+}
+
+function ChatFallback() {
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-black text-white text-sm opacity-70">
+      Loading chat...
+    </div>
+  );
+}
+
+function InnerChat() {
   const searchParams = useSearchParams();
   const name = searchParams.get("n");
 

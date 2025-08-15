@@ -1,6 +1,10 @@
 import OpenAI from "openai";
 import { systemPromptHC, systemPromptPA } from "../prompts/systemPrompts";
-export default async function Response_genrator(persona, question, history) {
+export default async function Response_genrator(
+  persona: any,
+  question: any,
+  history: any
+) {
   const openai = new OpenAI({
     apiKey: process.env.API_KEY,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
