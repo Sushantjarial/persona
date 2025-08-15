@@ -194,7 +194,6 @@ export default function ChatPage() {
             </button>
           </div>
           <div className="flex justify-between px-1 text-[10px] uppercase tracking-wide text-black/40 dark:text-white/40">
-            <span>Shift+Enter for newline</span>
             <span>{input.length}/4000</span>
           </div>
         </form>

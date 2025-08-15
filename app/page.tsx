@@ -197,7 +197,8 @@ export default function Home() {
                     className="text-2xl font-bold mb-4 group-hover:text-accent transition-colors duration-300"
                     style={{ color: "var(--foreground)" }}
                   >
-                    {educator.name}
+                    {educator.name.charAt(0).toUpperCase() +
+                      educator.name.slice(1)}
                   </h3>
                   <span
                     className={`inline-block px-5 py-2 rounded-full text-sm font-medium tracking-wide bg-gradient-to-r from-green-400/90  to-green-500/90 text-white shadow hover:shadow-md transition-shadow`}
