@@ -99,7 +99,9 @@ export default function ChatPage() {
       const data: ChatMessage = {
         id: uid(),
         role: "assistant",
-        text: res.ok ? await res.text() : "Error: Unable to get response",
+        text: res.ok
+          ? await res.json().then((d) => d.reply)
+          : "Error: Unable to get response",
         ts: Date.now(),
       };
       setMessages((m) => [...m, data]);
@@ -253,7 +255,7 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
       >
         {msg.text.split(/\n+/).map((line, i) => (
           <p key={i} className="whitespace-pre-wrap break-words">
-            {line}
+            {linkify(line)}
           </p>
         ))}
         <span className="mt-1 block text-[10px] opacity-40 select-none">
@@ -280,3 +282,22 @@ function TypingDots() {
     </span>
   );
 }
+const linkify = (text: string) => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlRegex).map((part, i) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 underline break-words"
+        >
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+};

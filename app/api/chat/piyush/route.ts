@@ -1,32 +1,59 @@
 import { NextResponse } from "next/server";
+import Response_genrator from "../../../../scripts/llmResponseGenerator";
+import type {
+  ChatRole,
+  HistoryEntry,
+  IncomingHistoryEntry,
+  ChatResponse,
+} from "../hitesh/route";
 
-interface ChatRequestBody {
+export interface ChatRequestBody {
   message?: string;
-  history?: { role: "user" | "assistant"; content: string }[];
+  history?: IncomingHistoryEntry[];
 }
 
 export async function POST(req: Request) {
   try {
     const body: ChatRequestBody = await req.json();
     const { message = "", history = [] } = body;
+    if (!message.trim()) {
+      return NextResponse.json({ error: "Message required" }, { status: 400 });
+    }
 
-    // Simple mock persona logic for Piyush
-    const prefix = "Piyush (mentor):";
-    const responseContent = `${prefix} ${
-      message ? "Great point about " + message + "." : "Hi!"
-    } I like to give practical, project-oriented guidance. What\'s your next goal?`;
+    const normalizedHistory: HistoryEntry[] = history
+      .filter(Boolean)
+      .map((h) => ({
+        role: (h.role === "assistant" ? "assistant" : "user") as ChatRole,
+        content: h.content ?? h.text ?? "",
+      }))
+      .filter((h) => h.content);
 
-    return NextResponse.json({
+    const personaName = "Piyus Garg"; // ensure matches alternate system prompt branch
+    const aiMessage: any = await Response_genrator(
+      personaName,
+      message,
+      normalizedHistory
+    );
+    const reply =
+      typeof aiMessage?.content === "string"
+        ? aiMessage.content
+        : Array.isArray(aiMessage?.content)
+        ? aiMessage.content
+            .map((c: any) => (typeof c === "string" ? c : c?.text || ""))
+            .join("\n")
+        : "(No content returned)";
+
+    const res: ChatResponse = {
       persona: "piyush",
-      reply: responseContent,
-      received: message,
-      historyLength: history.length,
+      reply,
       timestamp: Date.now(),
-    });
+      model: aiMessage?.model || "gemini-2.0-flash",
+    };
+    return NextResponse.json(res, { status: 200 });
   } catch (e: any) {
     return NextResponse.json(
-      { error: e?.message || "Invalid request" },
-      { status: 400 }
+      { error: e?.message || "Unexpected error" },
+      { status: 500 }
     );
   }
 }
