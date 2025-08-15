@@ -27,20 +27,11 @@ export default function ChatPage() {
     {
       id: uid(),
       role: "assistant",
-      text: "Hi there 👋\nI'm your learning companion. Ask me anything to get started!",
+      text:
+        name === "piyush"
+          ? "hi bhai kya hal chal aapke "
+          : "hanji , kya haal h aapke",
       ts: Date.now() - 1000 * 60 * 5,
-    },
-    {
-      id: uid(),
-      role: "user",
-      text: "Hey! Can you help me understand recursion?",
-      ts: Date.now() - 1000 * 60 * 4,
-    },
-    {
-      id: uid(),
-      role: "assistant",
-      text: "Absolutely. Recursion is a way of solving a problem where the solution depends on smaller instances of the same problem. Want a code example?",
-      ts: Date.now() - 1000 * 60 * 3,
     },
   ]);
   const [input, setInput] = useState("");
@@ -48,7 +39,6 @@ export default function ChatPage() {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     const el = viewportRef.current;
     if (el) {
@@ -56,7 +46,6 @@ export default function ChatPage() {
     }
   }, [messages, isThinking]);
 
-  // Auto-resize textarea height
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -78,14 +67,7 @@ export default function ChatPage() {
     setMessages((m) => [...m, userMsg]);
     setInput("");
     setIsThinking(true);
-    // Simulated assistant reply
-    // setTimeout(() => {
-    //   const reply: ChatMessage = {
-    //     id: uid(),
-    //     role: "assistant",
-    //     text: `You said: "${trimmed}". (This is a placeholder response.)`,
-    //     ts: Date.now(),
-    //   };
+
     console.log(history, "history", userMsg, messages);
 
     try {

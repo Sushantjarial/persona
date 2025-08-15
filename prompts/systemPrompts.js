@@ -1,7 +1,7 @@
-import { personas } from "../persona.js";
-import { videoHC } from "../videosHC.js";
+import { personas } from "./persona.js";
+import { videoHC } from "./videosHC.js";
 
-import { videosPG } from "../videosPG.js";
+import { videosPG } from "./videosPG.js";
 
 export const systemPromptHC = `
       
