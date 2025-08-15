@@ -82,29 +82,91 @@ function InnerChat() {
     const history = messages;
     setMessages((m) => [...m, userMsg]);
     setInput("");
-    setIsThinking(true);
 
-    console.log(history, "history", userMsg, messages);
+    // Prepare streaming assistant placeholder
+    const assistantId = uid();
+    let accumulated = "";
+    setMessages((m) => [
+      ...m,
+      { id: assistantId, role: "assistant", text: "", ts: Date.now() },
+    ]);
 
     try {
-      const res = await fetch(`/api/chat/${name}`, {
+      const res = await fetch(`/api/chat/${name}?stream=1`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "text/event-stream",
         },
         body: JSON.stringify({ message: trimmed, history }),
       });
-      const data: ChatMessage = {
-        id: uid(),
-        role: "assistant",
-        text: res.ok
-          ? await res.json().then((d) => d.reply)
-          : "Error: Unable to get response",
-        ts: Date.now(),
-      };
-      setMessages((m) => [...m, data]);
-      setIsThinking(false);
+      const ct = res.headers.get("content-type") || "";
+      if (!res.body || !ct.includes("text/event-stream")) {
+        // Fallback to full JSON
+        const json = res.ok
+          ? await res.json()
+          : { reply: "Error: Unable to get response" };
+        accumulated = json.reply || "(empty)";
+        setMessages((msgs) =>
+          msgs.map((m) =>
+            m.id === assistantId
+              ? { ...m, text: accumulated, ts: Date.now() }
+              : m
+          )
+        );
+        return;
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split(/\n\n/);
+        buffer = events.pop() || ""; // keep partial
+        for (const evt of events) {
+          const dataLine = evt.split(/\n/).find((l) => l.startsWith("data:"));
+          if (!dataLine) continue;
+          try {
+            const payload = JSON.parse(dataLine.slice(5).trim());
+            if (payload.delta) {
+              accumulated += payload.delta;
+              setMessages((msgs) =>
+                msgs.map((m) =>
+                  m.id === assistantId ? { ...m, text: accumulated } : m
+                )
+              );
+            }
+            if (payload.error) {
+              setMessages((msgs) =>
+                msgs.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, text: `Error: ${payload.error}` }
+                    : m
+                )
+              );
+            }
+            if (payload.done) {
+              setMessages((msgs) =>
+                msgs.map((m) =>
+                  m.id === assistantId ? { ...m, ts: Date.now() } : m
+                )
+              );
+            }
+          } catch (_) {
+            /* ignore */
+          }
+        }
+      }
     } catch (error) {
+      setMessages((msgs) =>
+        msgs.map((m) =>
+          m.id === assistantId
+            ? { ...m, text: "Error: Unable to stream response" }
+            : m
+        )
+      );
       console.error("Error sending message:", error);
     }
   };

@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 // Using relative path since tsconfig path alias might not be configured for scripts
-import Response_genrator from "../../../../scripts/llmResponseGenerator";
+import Response_genrator, {
+  streamResponseGenerator,
+  type HistoryEntry,
+  type ChatRole,
+} from "../../../../scripts/llmResponseGenerator";
 
 // Type definitions
-export type ChatRole = "user" | "assistant";
-export interface HistoryEntry {
-  role: ChatRole;
-  content: string;
-}
+// (Types now imported from helper)
 export interface IncomingHistoryEntry {
   role?: ChatRole;
   content?: string;
@@ -24,8 +24,14 @@ export interface ChatResponse {
   model?: string;
 }
 
+export const runtime = "edge";
+
 export async function POST(req: Request) {
   try {
+    const url = new URL(req.url);
+    const streamMode =
+      url.searchParams.get("stream") === "1" ||
+      req.headers.get("accept")?.includes("text/event-stream");
     const body: ChatRequestBody = await req.json();
     const { message = "", history = [] } = body;
     if (!message.trim()) {
@@ -44,6 +50,45 @@ export async function POST(req: Request) {
     // The generator distinguishes Hitesh using exact string "Hitesh Choudhary"
     const personaName = "Hitesh Choudhary"; // ensure match with systemPrompt switch
 
+    if (streamMode) {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            for await (const delta of streamResponseGenerator(
+              personaName,
+              message,
+              normalizedHistory
+            )) {
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ delta })}\n\n`)
+              );
+            }
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`)
+            );
+            controller.close();
+          } catch (err: any) {
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({
+                  error: err?.message || "stream_error",
+                })}\n\n`
+              )
+            );
+            controller.close();
+          }
+        },
+      });
+      return new Response(stream, {
+        headers: {
+          "Content-Type": "text/event-stream; charset=utf-8",
+          "Cache-Control": "no-cache, no-transform",
+          Connection: "keep-alive",
+        },
+      });
+    }
+
     const aiMessage: any = await Response_genrator(
       personaName,
       message,
@@ -57,7 +102,6 @@ export async function POST(req: Request) {
             .map((c: any) => (typeof c === "string" ? c : c?.text || ""))
             .join("\n")
         : "(No content returned)";
-
     const res: ChatResponse = {
       persona: "hitesh",
       reply,
