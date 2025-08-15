@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, use } from "react";
 import { motion } from "motion/react"; // motion one react
 import { Boxes } from "@/components/ui/background-boxes";
+import { useRouter } from "next/navigation";
 type Persona = {
   id: string;
   name: string;
@@ -13,6 +14,8 @@ type Persona = {
 };
 
 export default function Home() {
+  const router = useRouter();
+
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -23,20 +26,20 @@ export default function Home() {
   const educators: Persona[] = [
     {
       id: "dr-smith",
-      name: "Hitesh Chaudhary",
+      name: "hitesh",
       image:
         "https://media.licdn.com/dms/image/v2/D4D03AQH8CXRHAKQd6Q/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1693777638244?e=2147483647&v=beta&t=J9gdqyexcRnLD1JoAU42jY7EEPFRj5-CWrYvjkA94So",
-      gradient: "from-green-400 to-cyan-400",
+      gradient: "from-blue-400 to-cyan-400",
       hoverGradient: "from-green-500 to-cyan-500",
       message:
         "Hello! I'm Dr. Smith. Ready to explore the fascinating world of science and technology together?",
     },
     {
       id: "prof-johnson",
-      name: "Piyus Garg",
+      name: "piyush",
       image:
         "https://yt3.googleusercontent.com/3acddexuFlA5yKRS2--11NeqhCiik-0cntUPjk_QjlsA4ScmQUPWNmeBLweVUQjWXTCLT26lsw=s900-c-k-c0x00ffffff-no-rj",
-      gradient: "from-green-400 to-pink-400",
+      gradient: "from-violet-400 to-pink-400",
       hoverGradient: "from-green-500 to-pink-500",
       message:
         "Greetings! I'm Professor Johnson. Let's dive into meaningful conversations about humanities and arts!",
@@ -147,7 +150,10 @@ export default function Home() {
             <motion.button
               key={educator.id}
               className="group text-left relative cursor-pointer"
-              onClick={() => selectPersona(educator)}
+              onClick={() => {
+                selectPersona(educator);
+                router.push(`/chat/?n=${educator.name}`); // Navigate to chat with selected persona
+              }}
               initial={cardHidden}
               animate={cardShow(i * 0.12)}
               whileHover={{ scale: 1.04 }}
@@ -169,7 +175,7 @@ export default function Home() {
                   }}
                 />
                 <div
-                  className={`absolute inset-0 bg-gradient-to-br ${educator.gradient} opacity-0 group-hover:opacity-15 transition-opacity duration-500 rounded-3xl mix-blend-overlay`}
+                  className={`absolute inset-0 bg-gradient-to-br ${educator.gradient} opacity-20 group-hover:opacity-15 transition-opacity duration-500 rounded-3xl mix-blend-overlay`}
                 ></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1600ms] ease-linear" />
                 <div className="relative z-10 flex flex-col items-center">
@@ -193,7 +199,9 @@ export default function Home() {
                   >
                     {educator.name}
                   </h3>
-                  <span className="inline-block px-5 py-2 rounded-full text-sm font-medium tracking-wide bg-gradient-to-r from-green-400/90 to-cyan-500/90 text-white shadow hover:shadow-md transition-shadow">
+                  <span
+                    className={`inline-block px-5 py-2 rounded-full text-sm font-medium tracking-wide bg-gradient-to-r from-green-400/90  to-green-500/90 text-white shadow hover:shadow-md transition-shadow`}
+                  >
                     Select
                   </span>
                 </div>

@@ -1,4 +1,5 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 
 import React, {
   useState,
@@ -19,6 +20,9 @@ type ChatMessage = {
 const uid = () => Math.random().toString(36).slice(2, 11);
 
 export default function ChatPage() {
+  const searchParams = useSearchParams();
+  const name = searchParams.get("n");
+
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: uid(),
@@ -70,20 +74,39 @@ export default function ChatPage() {
       text: trimmed,
       ts: Date.now(),
     };
+    const history = messages;
     setMessages((m) => [...m, userMsg]);
     setInput("");
     setIsThinking(true);
     // Simulated assistant reply
-    setTimeout(() => {
-      const reply: ChatMessage = {
+    // setTimeout(() => {
+    //   const reply: ChatMessage = {
+    //     id: uid(),
+    //     role: "assistant",
+    //     text: `You said: "${trimmed}". (This is a placeholder response.)`,
+    //     ts: Date.now(),
+    //   };
+    console.log(history, "history", userMsg, messages);
+
+    try {
+      const res = await fetch(`/api/chat/${name}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: trimmed, history }),
+      });
+      const data: ChatMessage = {
         id: uid(),
         role: "assistant",
-        text: `You said: "${trimmed}". (This is a placeholder response.)`,
+        text: res.ok ? await res.text() : "Error: Unable to get response",
         ts: Date.now(),
       };
-      setMessages((m) => [...m, reply]);
+      setMessages((m) => [...m, data]);
       setIsThinking(false);
-    }, 900);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -109,13 +132,13 @@ export default function ChatPage() {
         }}
       />
       {/* Chat Shell */}
-      <div className="relative z-10 w-full max-w-3xl flex flex-col h-[88vh] max-h-[900px] md:rounded-3xl overflow-hidden shadow-xl bg-[var(--background)]/70 backdrop-blur-xl border border-black/20 dark:border-white/10">
+      <div className="relative z-10 w-full max-w-3xl flex flex-col h-[95vh] max-h-[900px] md:rounded-3xl overflow-hidden shadow-xl bg-[var(--background)]/70 backdrop-blur-xl border border-black/20 dark:border-white/10">
         {/* Chat Header */}
         <div className="flex items-center gap-3 px-5 py-4  backdrop-blur-md relative">
           <div className="relative w-11 h-11 rounded-full bg-gradient-to-br from-green-400 to-cyan-400 p-[2px]">
             <div className="w-full h-full rounded-full overflow-hidden bg-white/90 flex items-center justify-center">
               <img
-                src="https://media.licdn.com/dms/image/v2/D4D03AQH8CXRHAKQd6Q/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1693777638244?e=2147483647&v=beta&t=J9gdqyexcRnLD1JoAU42jY7EEPFRj5-CWrYvjkA94So"
+                src={name !== "piyush" ? "./hitesh.jpg" : "./piyush.webp"}
                 alt="Companion avatar"
                 className="w-full h-full object-cover"
               />
@@ -126,7 +149,7 @@ export default function ChatPage() {
               className="font-semibold text-sm"
               style={{ color: "var(--foreground)" }}
             >
-              Learning Companion
+              {name}
             </span>
             <span className="text-xs text-black/60 dark:text-white/50">
               online
