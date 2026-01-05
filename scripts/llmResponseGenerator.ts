@@ -6,10 +6,10 @@ export type ChatRole = "user" | "assistant";
 export interface HistoryEntry {
   role: ChatRole;
   content: string;
-}
+} 
 
-const MODEL = "gemini-2.0-flash";
-
+const MODEL = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3-flash"][Math.floor(Math.random()*3)];
+console.log("Using model:", MODEL);
 function getClient() {
   const apiKey = process.env.API_KEY;
   if (!apiKey) {
@@ -81,6 +81,7 @@ export async function* streamResponseGenerator(
       }
     } catch {
       /* swallow malformed chunk */
+      console.error("malformed chunk", chunk);
     }
   }
 }
