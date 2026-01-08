@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, use } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "motion/react"; // motion one react
 import { Boxes } from "@/components/ui/background-boxes";
 import { useRouter } from "next/navigation";
@@ -90,7 +90,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden"
       style={{ background: "var(--background)" }}
     >
       <Boxes className="z-0" />
@@ -124,94 +124,152 @@ export default function Home() {
         }
       `}</style>
       <div
-        className={`max-w-4xl w-full text-center relative z-10 transition-all duration-1000 ${
+        className={`max-w-6xl w-full text-center relative z-10 transition-all duration-1000 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
       >
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -left-24 top-12 h-40 w-40 rounded-full bg-gradient-to-br from-[#25d366]/25 via-white/30 to-transparent blur-3xl" />
+          <div className="absolute -right-16 bottom-10 h-48 w-48 rounded-full bg-gradient-to-br from-white/30 via-[#25d366]/25 to-transparent blur-3xl" />
+        </div>
+
         {/* Header */}
-        <div className="mb-12">
-          <h1
-            className="text-5xl md:text-6xl font-bold mb-4 tracking-tight"
+        <div className="mb-10 space-y-4">
+          <div
+            className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/5"
             style={{ color: "var(--foreground)" }}
           >
-            Choose Your <span style={{ color: "var(--accent)" }}>Persona</span>
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ background: "var(--accent)" }}
+            />
+            Featured Educators
+          </div>
+          <h1
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
+            style={{ color: "var(--foreground)" }}
+          >
+            Learn From Your Favourite{" "}
+            <span style={{ color: "var(--accent)" }}>Educator</span>
           </h1>
           <p
-            className="text-xl opacity-90"
+            className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto"
             style={{ color: "var(--foreground)" }}
           >
-            Select your learning companion
+            Choose a guide, open a chat, and get concise answers tailored to how
+            you like to learn.
           </p>
         </div>
 
         {/* Educator Cards */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1  md:grid-cols-2 gap-10 items-stretch">
           {educators.map((educator, i) => (
             <motion.button
               key={educator.id}
-              className="group text-left relative cursor-pointer"
+              className="group relative w-full text-left h-full"
               onClick={() => {
                 selectPersona(educator);
-                router.push(`/chat/?n=${educator.name}`); // Navigate to chat with selected persona
+                router.push(`/chat/?n=${educator.name}`); 
               }}
               initial={cardHidden}
               animate={cardShow(i * 0.12)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.99 }}
               style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              <div
-                className="relative backdrop-blur-lg rounded-3xl p-8 shadow-2xl overflow-hidden transition-all duration-500 group-hover:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.35)] group-hover:scale-[1.02]"
-                style={{
-                  background: "rgba(255,255,255,0.25)",
-                  boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.25)",
-                }}
-              >
-                <span
-                  className="absolute inset-[-4px] pointer-events-none animate-[spin_4s_linear_infinite] rounded-3xl p-[2px] z-0 opacity-30 group-hover:opacity-60 transition-opacity"
-                  style={{
-                    background:
-                      "conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#25d366_50%,#E2CBFF_100%)",
-                  }}
-                />
+              <div className="relative h-full group-hover:cursor-pointer overflow-hidden rounded-3xl border border-white/35 bg-white/60 px-1 py-1 shadow-[0_20px_80px_-35px_rgba(0,0,0,0.65)] backdrop-blur-xl transition-all duration-500 dark:border-white/10 dark:bg-white/5 group-hover:shadow-[0_22px_90px_-30px_rgba(0,0,0,0.75)]">
                 <div
-                  className={`absolute inset-0 bg-gradient-to-br ${educator.gradient} opacity-20 group-hover:opacity-15 transition-opacity duration-500 rounded-3xl mix-blend-overlay`}
-                ></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1600ms] ease-linear" />
-                <div className="relative z-10 flex flex-col items-center">
-                  <div className="mb-6 relative">
-                    <div
-                      className={`w-32 h-32 mx-auto rounded-full bg-gradient-to-br ${educator.gradient} p-[3px] group-hover:scale-105 transition-transform duration-500 shadow-inner`}
-                    >
-                      <div className="w-full h-full rounded-full bg-white/90 flex items-center justify-center overflow-hidden shadow-lg">
-                        <img
-                          src={educator.image}
-                          alt={educator.name}
-                          className="w-full h-full object-cover rounded-full"
-                        />
+                  className={`absolute inset-[1px] rounded-[22px] bg-gradient-to-br ${educator.gradient} opacity-15 transition-opacity duration-500 group-hover:opacity-35`}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/10 to-white/0 dark:from-white/10 dark:via-white/5" />
+                <div className="absolute -left-10 -top-14 h-28 w-28 rounded-full bg-white/40 blur-3xl" />
+                <div className="absolute -right-16 bottom-0 h-36 w-36 rounded-full bg-emerald-200/40 blur-3xl" />
+
+                <div className="relative z-10 flex h-full flex-col gap-6 rounded-[20px] bg-white/70 px-8 py-7 dark:bg-white/5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`relative h-16 w-16 rounded-2xl bg-gradient-to-br ${educator.hoverGradient} p-[2px] shadow-inner transition-transform duration-300 group-hover:scale-105`}
+                      >
+                        <div className="h-full w-full overflow-hidden rounded-[14px] bg-white/95 dark:bg-white/10 shadow-lg">
+                          <img
+                            src={educator.image}
+                            alt={educator.name}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <span className="pointer-events-none absolute inset-0 rounded-2xl border border-white/30" />
+                      </div>
+                      <div className="text-left">
+                        <p
+                          className="text-xs uppercase tracking-[0.2em] opacity-80"
+                          style={{ color: "var(--foreground)" }}
+                        >
+                          Always-on Mentor
+                        </p>
+                        <h3
+                          className="text-2xl font-semibold leading-tight"
+                          style={{ color: "var(--foreground)" }}
+                        >
+                          {educator.name.charAt(0).toUpperCase() +
+                            educator.name.slice(1)}
+                        </h3>
                       </div>
                     </div>
-                    <span className="pointer-events-none absolute -inset-2 rounded-full opacity-0 group-hover:opacity-40 blur-xl bg-gradient-to-br from-white/30 to-transparent transition-opacity"></span>
+                    <span
+                      className="rounded-full border border-white/40 bg-white/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide opacity-90 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/10"
+                      style={{ color: "var(--foreground)" }}
+                    >
+                      Live Chat
+                    </span>
                   </div>
-                  <h3
-                    className="text-2xl font-bold mb-4 group-hover:text-accent transition-colors duration-300"
+
+                  <p
+                    className="text-sm leading-relaxed opacity-90"
                     style={{ color: "var(--foreground)" }}
                   >
-                    {educator.name.charAt(0).toUpperCase() +
-                      educator.name.slice(1)}
-                  </h3>
-                  <span
-                    className={`inline-block px-5 py-2 rounded-full text-sm font-medium tracking-wide bg-gradient-to-r from-green-400/90  to-green-500/90 text-white shadow hover:shadow-md transition-shadow`}
-                  >
-                    Select
-                  </span>
+                    {educator.message}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2">
+                    <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-100">
+                      Conversational
+                    </span>
+                    <span className="rounded-full bg-[#25d366]/15 px-3 py-1 text-xs font-semibold text-emerald-800 dark:text-emerald-50">
+                      Actionable steps
+                    </span>
+                    <span
+                      className="rounded-full bg-white/50 px-3 py-1 text-xs font-semibold opacity-90 dark:bg-white/10"
+                      style={{ color: "var(--foreground)" }}
+                    >
+                      Personalized pace
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4 pt-2">
+                    <div className="flex flex-col text-left">
+                      <span
+                        className="text-xs uppercase tracking-[0.25em] opacity-70"
+                        style={{ color: "var(--foreground)" }}
+                      >
+                        Click to start
+                      </span>
+                      <span
+                        className="text-lg font-semibold"
+                        style={{ color: "var(--foreground)" }}
+                      >
+                        Craft your next question
+                      </span>
+                    </div>
+                
+                  </div>
                 </div>
               </div>
             </motion.button>
           ))}
         </div>
 
-        {/* Selected Persona Message */}
+
       </div>
 
       {/* Floating Animation Elements */}
