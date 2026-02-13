@@ -47,8 +47,7 @@ export async function POST(req: Request) {
       }))
       .filter((h) => h.content);
 
-    // The generator distinguishes Hitesh using exact string "Hitesh Choudhary"
-    const personaName = "Hitesh Choudhary"; // ensure match with systemPrompt switch
+    const personaName = "Hitesh Choudhary";
 
     if (streamMode) {
       const encoder = new TextEncoder();
@@ -58,14 +57,14 @@ export async function POST(req: Request) {
             for await (const delta of streamResponseGenerator(
               personaName,
               message,
-              normalizedHistory
+              normalizedHistory,
             )) {
               controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ delta })}\n\n`)
+                encoder.encode(`data: ${JSON.stringify({ delta })}\n\n`),
               );
             }
             controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`)
+              encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`),
             );
             controller.close();
           } catch (err: any) {
@@ -73,8 +72,8 @@ export async function POST(req: Request) {
               encoder.encode(
                 `data: ${JSON.stringify({
                   error: err?.message || "stream_error",
-                })}\n\n`
-              )
+                })}\n\n`,
+              ),
             );
             controller.close();
           }
@@ -92,16 +91,16 @@ export async function POST(req: Request) {
     const aiMessage: any = await Response_genrator(
       personaName,
       message,
-      normalizedHistory
+      normalizedHistory,
     );
     const reply =
       typeof aiMessage?.content === "string"
         ? aiMessage.content
         : Array.isArray(aiMessage?.content)
-        ? aiMessage.content
-            .map((c: any) => (typeof c === "string" ? c : c?.text || ""))
-            .join("\n")
-        : "(No content returned)";
+          ? aiMessage.content
+              .map((c: any) => (typeof c === "string" ? c : c?.text || ""))
+              .join("\n")
+          : "(No content returned)";
     const res: ChatResponse = {
       persona: "hitesh",
       reply,
@@ -112,7 +111,7 @@ export async function POST(req: Request) {
   } catch (e: any) {
     return NextResponse.json(
       { error: e?.message || "Unexpected error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

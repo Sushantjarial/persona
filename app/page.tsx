@@ -25,24 +25,23 @@ export default function Home() {
 
   const educators: Persona[] = [
     {
-      id: "dr-smith",
+      id: "hitesh",
       name: "hitesh",
       image:
         "https://media.licdn.com/dms/image/v2/D4D03AQH8CXRHAKQd6Q/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1693777638244?e=2147483647&v=beta&t=J9gdqyexcRnLD1JoAU42jY7EEPFRj5-CWrYvjkA94So",
       gradient: "from-blue-400 to-cyan-400",
       hoverGradient: "from-green-500 to-cyan-500",
-      message:
-        "Hello! I'm Dr. Smith. Ready to explore the fascinating world of science and technology together?",
+      message: "Hello! I'm hitesh. I love chai and coding!",
     },
     {
-      id: "prof-johnson",
+      id: "piyush",
       name: "piyush",
       image:
         "https://yt3.googleusercontent.com/3acddexuFlA5yKRS2--11NeqhCiik-0cntUPjk_QjlsA4ScmQUPWNmeBLweVUQjWXTCLT26lsw=s900-c-k-c0x00ffffff-no-rj",
       gradient: "from-violet-400 to-pink-400",
       hoverGradient: "from-green-500 to-pink-500",
       message:
-        "Greetings! I'm Professor Johnson. Let's dive into meaningful conversations about humanities and arts!",
+        "Hi there! I'm Piyush, lets dive deep into the world of node and devops",
     },
   ];
 
@@ -169,7 +168,7 @@ export default function Home() {
               className="group relative w-full text-left h-full"
               onClick={() => {
                 selectPersona(educator);
-                router.push(`/chat/?n=${educator.name}`); 
+                router.push(`/chat/?n=${educator.name}`);
               }}
               initial={cardHidden}
               animate={cardShow(i * 0.12)}
@@ -204,9 +203,7 @@ export default function Home() {
                         <p
                           className="text-xs uppercase tracking-[0.2em] opacity-80"
                           style={{ color: "var(--foreground)" }}
-                        >
-                          Always-on Mentor
-                        </p>
+                        ></p>
                         <h3
                           className="text-2xl font-semibold leading-tight"
                           style={{ color: "var(--foreground)" }}
@@ -216,12 +213,6 @@ export default function Home() {
                         </h3>
                       </div>
                     </div>
-                    <span
-                      className="rounded-full border border-white/40 bg-white/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide opacity-90 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/10"
-                      style={{ color: "var(--foreground)" }}
-                    >
-                      Live Chat
-                    </span>
                   </div>
 
                   <p
@@ -230,21 +221,6 @@ export default function Home() {
                   >
                     {educator.message}
                   </p>
-
-                  <div className="flex flex-wrap gap-2">
-                    <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-100">
-                      Conversational
-                    </span>
-                    <span className="rounded-full bg-[#25d366]/15 px-3 py-1 text-xs font-semibold text-emerald-800 dark:text-emerald-50">
-                      Actionable steps
-                    </span>
-                    <span
-                      className="rounded-full bg-white/50 px-3 py-1 text-xs font-semibold opacity-90 dark:bg-white/10"
-                      style={{ color: "var(--foreground)" }}
-                    >
-                      Personalized pace
-                    </span>
-                  </div>
 
                   <div className="flex items-center justify-between gap-4 pt-2">
                     <div className="flex flex-col text-left">
@@ -261,15 +237,12 @@ export default function Home() {
                         Craft your next question
                       </span>
                     </div>
-                
                   </div>
                 </div>
               </div>
             </motion.button>
           ))}
         </div>
-
-
       </div>
 
       {/* Floating Animation Elements */}
